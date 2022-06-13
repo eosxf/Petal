@@ -1,0 +1,26 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>library</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <WarningsAsErrors>Nullable</WarningsAsErrors>
+        <LangVersion>10</LangVersion>
+    </PropertyGroup>
+        
+    <PropertyGroup>
+        <DefineConstants>XNA_IMPLEMENTATION_FNA</DefineConstants>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Petal.IO\Petal.IO.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="FNA, Version=22.5.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>lib\FNA.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+</Project>

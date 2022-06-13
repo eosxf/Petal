@@ -1,0 +1,29 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <WarningsAsErrors>Nullable</WarningsAsErrors>
+    </PropertyGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Petal.Engine\Petal.Engine.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Reference Include="FNA, Version=22.5.0.0, Culture=neutral, PublicKeyToken=null">
+        <HintPath>..\Petal.Engine\lib\FNA.dll</HintPath>
+      </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ContentWithTargetPath Include="res/**">
+            <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+            <!--<CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>-->
+            <TargetPath>%(RecursiveDir)\%(Filename)%(Extension)</TargetPath>
+        </ContentWithTargetPath>
+    </ItemGroup>
+
+</Project>

@@ -1,0 +1,10 @@
+{
+	"windowTitle": "Petal Sandbox",
+	"windowWidth": 960,
+	"windowHeight": 540,
+	"windowType": "fullscreen",
+	"IsMouseVisible": true,
+	"vSync": false,
+	"desiredFramerate": 60,
+	"platform": "none"
+}
