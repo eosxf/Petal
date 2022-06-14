@@ -1,4 +1,6 @@
-﻿namespace Petal.Engine.Sandbox;
+﻿using Petal.IO;
+
+namespace Petal.Engine.Sandbox;
 
 public class SandboxGame : PetalCore
 {
@@ -6,4 +8,7 @@ public class SandboxGame : PetalCore
 	{
 		
 	}
+
+	protected override PetalConfiguration RecreateConfiguration()
+		=> new PetalConfiguration(new File("petal_engine.json"));
 }

@@ -23,11 +23,12 @@ public class PetalConfiguration
 	public readonly int WindowWidth;
 	public readonly int WindowHeight;
 	public readonly WindowType WindowType;
+	public readonly bool IsWindowUserResizable;
 	public readonly bool IsMouseVisible;
 	public readonly Platforms Platform;
 	public readonly bool VSync;
 	public readonly int DesiredFramerate;
-	
+
 	public PetalConfiguration()
 		: this(new SerialView())
 	{
@@ -49,6 +50,7 @@ public class PetalConfiguration
 		WindowWidth = serial.WindowWidth;
 		WindowHeight = serial.WindowHeight;
 		WindowType = serial.WindowType;
+		IsWindowUserResizable = serial.IsWindowUserResizable;
 		IsMouseVisible = serial.IsMouseVisible;
 		Platform = serial.Platform;
 		VSync = serial.VSync;
@@ -74,6 +76,8 @@ public class PetalConfiguration
 		public bool VSync = false;
 		[JsonPropertyName("desiredFramerate")]
 		public int DesiredFramerate = 60;
+		[JsonPropertyName("isWindowUserResizable")]
+		public bool IsWindowUserResizable;
 		
 		[JsonConstructor]
 		public SerialView()
@@ -86,6 +90,7 @@ public class PetalConfiguration
 	{
 		return $"PetalConfiguration[" +
 		       $"WindowTitle: {WindowTitle}, WindowWidth: {WindowWidth}, WindowHeight: " +
-		       $"{WindowHeight}, WindowType: {WindowType}, IsMouseVisible: {IsMouseVisible}]";
+		       $"{WindowHeight}, WindowType: {WindowType}, IsWindowResizable: " +
+		       $"{IsWindowUserResizable}, IsMouseVisible: {IsMouseVisible}]";
 	}
 }

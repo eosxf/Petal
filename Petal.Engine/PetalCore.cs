@@ -1,27 +1,32 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime;
+using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Petal.Engine.Compatibility;
+using Petal.Common;
 using Petal.Engine.Content;
 using Petal.Engine.Extensions;
 using Petal.Engine.Graphics;
+using Petal.Engine.Math;
+using Petal.IO;
 
 namespace Petal.Engine;
 
 public abstract class PetalCore : Game
 {
 	public readonly GraphicsDeviceManager Graphics;
-	public readonly IPlatformCompatibility PlatformCompatibility;
 	public PetalContentManager Contents => (PetalContentManager) Content;
 
 	private SpriteBatch _spriteBatch = null!;
 	private Texture2D? _texture;
 
+	private WindowType _windowType = WindowType.Windowed;
+
 	protected PetalCore(PetalConfiguration config)
 	{
-		PlatformCompatibility = IPlatformCompatibility.FromPlatform(config.Platform);
 		Graphics = new GraphicsDeviceManager(this);
 		Content = new PetalContentManager(this);
 		ApplyConfiguration(config);
@@ -32,48 +37,59 @@ public abstract class PetalCore : Game
 	protected override void Initialize()
 	{
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
+		_texture = Contents.Load<Texture2D>("guy");
 		base.Initialize();
 	}
 
 	public void ApplyConfiguration(PetalConfiguration config)
 	{
+		_windowType = config.WindowType;
 		Window.Title = config.WindowTitle;
 		IsMouseVisible = config.IsMouseVisible;
-		
-		switch (config.WindowType)
+
+		var windowSize = new Vector2Int(config.WindowWidth, config.WindowHeight);
+
+		switch (_windowType)
 		{
 			case WindowType.Windowed:
-				Graphics.PreferredBackBufferWidth = config.WindowWidth;
-				Graphics.PreferredBackBufferHeight = config.WindowHeight;
-				Window.SetBorderless(false);
-				Graphics.IsFullScreen = false;
 				break;
-			case WindowType.BorderlessWindowed:
-				Graphics.PreferredBackBufferWidth = config.WindowWidth;
-				Graphics.PreferredBackBufferHeight = config.WindowHeight;
-				Graphics.IsFullScreen = false;
-				Window.SetBorderless(true);
+			case WindowType.BorderlessFullscreen:
+			{
+				var displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
+				windowSize = new Vector2Int(displayMode.Width, displayMode.Height);
 				break;
+			}
 			case WindowType.Fullscreen:
-				Graphics.PreferredBackBufferWidth = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Width;
-				Graphics.PreferredBackBufferHeight = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode.Height;
-				Window.SetBorderless(false);
-				Graphics.IsFullScreen = true;
+			{
+				var displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
+				windowSize = new Vector2Int(displayMode.Width, displayMode.Height);
 				break;
+			}
 			default:
-				break;
+				throw new InvalidOperationException($"Config window type {config.WindowType} is not supported.");
 		}
 
+		Window.AllowUserResizing = config.IsWindowUserResizable;
 		IsFixedTimeStep = config.VSync;
 		TargetElapsedTime = TimeSpan.FromSeconds(1d / config.DesiredFramerate);
 		
-		Graphics.ApplyChanges();
+		ChangeWindowProperties(windowSize, _windowType);
 	}
 
 	protected override void Update(GameTime gameTime)
 	{
-		if(Keyboard.GetState().IsKeyDown(Keys.Escape))
+		var keys = Keyboard.GetState();
+		
+		if(keys.IsKeyDown(Keys.Escape))
 			Exit();
+
+		if (keys.IsKeyDown(Keys.Space))
+		{
+			var windowTypes = Enum.GetValues<WindowType>();
+			var windowType = windowTypes[new Random().Next(0, windowTypes.Length)];
+			var config = RecreateConfiguration();
+			ChangeWindowProperties(new Vector2Int(config.WindowWidth, config.WindowHeight), windowType);
+		}
 	}
 
 	protected override void Draw(GameTime gameTime)
@@ -84,26 +100,67 @@ public abstract class PetalCore : Game
 		rArgs.Graphics = Graphics;
 
 		var targetResolution = new Vector2(1920, 1080);
-		var actualResolution = GetScreenDimensions();
+		var actualResolution = GetWindowDimensions();
 
 		rArgs.Matrix = Matrix.CreateScale(actualResolution.X / targetResolution.X, actualResolution.Y /
 			targetResolution.Y, 1.0f);
 		
 		_spriteBatch.Begin(rArgs.SortMode, rArgs.BlendState, rArgs.SamplerState, rArgs.DepthStencilState, rArgs
 		.Rasterizer, rArgs.DefaultEffect, rArgs.Matrix);
-		_spriteBatch.Draw(Contents.Load<Texture2D>("guy"), new Rectangle(1, 1, 1918, 1078), Color.Red);
+		//_spriteBatch.Begin();
+		_spriteBatch.Draw(_texture, new Rectangle(5, 5, 1914, 1074), Color.Red);
 		_spriteBatch.End();
 		base.Draw(gameTime);
 	}
 	
-	public Rectangle GetScreenBounds()
+	public Rectangle GetWindowBounds()
 	{
 		return Graphics.GraphicsDevice.Viewport.Bounds;
 	}
 
-	public Vector2 GetScreenDimensions()
+	public Vector2Int GetScreenSize()
 	{
-		var bounds = GetScreenBounds();
+		var displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
+		return new Vector2Int(displayMode.Width, displayMode.Height);
+	}
+
+	public Vector2 GetWindowDimensions()
+	{
+		var bounds = GetWindowBounds();
 		return new Vector2(bounds.Width, bounds.Height);
 	}
+
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public void ChangeWindowProperties(Vector2Int size) => ChangeWindowProperties(size, _windowType);
+
+	public void ChangeWindowProperties(Vector2Int size, WindowType? windowType)
+	{
+		_windowType = windowType ?? _windowType;
+
+		switch (windowType)
+		{
+			case WindowType.Windowed:
+				Graphics.PreferredBackBufferWidth = size.X;
+				Graphics.PreferredBackBufferHeight = size.Y;
+				Window.SetBorderless(false);
+				Graphics.IsFullScreen = false;
+				break;
+			case WindowType.BorderlessFullscreen:
+				Graphics.PreferredBackBufferWidth = GetScreenSize().X;
+				Graphics.PreferredBackBufferHeight = GetScreenSize().Y;
+				Graphics.IsFullScreen = false;
+				Window.SetBorderless(true);
+				break;
+			case WindowType.Fullscreen:
+				Window.SetBorderless(false);
+				Graphics.ToggleFullScreen();
+				break;
+			default:
+				throw new InvalidOperationException($"Config window type {windowType} is not supported.");
+		}
+		
+		Graphics.ApplyChanges();
+	}
+
+	protected virtual PetalConfiguration RecreateConfiguration() => new();
 }
