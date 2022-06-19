@@ -1,7 +1,7 @@
 {
 	"windowTitle": "Petal Sandbox",
-	"windowWidth": 960,
-	"windowHeight": 540,
+	"windowWidth": 1280,
+	"windowHeight": 800,
 	"windowType": "windowed",
 	"isWindowUserResizable": true,
 	"isMouseVisible": true,

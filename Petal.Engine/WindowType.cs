@@ -6,6 +6,8 @@ public enum WindowType
 {
 	[EnumMember(Value = "windowed")]
 	Windowed,
+	[EnumMember(Value = "borderless")]
+	Borderless,
 	[EnumMember(Value = "borderlessFullscreen")]
 	BorderlessFullscreen,
 	[EnumMember(Value = "fullscreen")]

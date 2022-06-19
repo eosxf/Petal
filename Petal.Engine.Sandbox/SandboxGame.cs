@@ -10,5 +10,5 @@ public class SandboxGame : PetalCore
 	}
 
 	protected override PetalConfiguration RecreateConfiguration()
-		=> new PetalConfiguration(new File("petal_engine.json"));
+		=> new (new File("petal_engine.json"));
 }

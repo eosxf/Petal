@@ -1,24 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Reflection;
 using System.Runtime;
 using System.Runtime.CompilerServices;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Petal.Common;
 using Petal.Engine.Content;
 using Petal.Engine.Extensions;
 using Petal.Engine.Graphics;
 using Petal.Engine.Math;
-using Petal.IO;
 
 namespace Petal.Engine;
 
 public abstract class PetalCore : Game
 {
 	public readonly GraphicsDeviceManager Graphics;
-	public PetalContentManager Contents => (PetalContentManager) Content;
 
 	private SpriteBatch _spriteBatch = null!;
 	private Texture2D? _texture;
@@ -28,7 +23,7 @@ public abstract class PetalCore : Game
 	protected PetalCore(PetalConfiguration config)
 	{
 		Graphics = new GraphicsDeviceManager(this);
-		Content = new PetalContentManager(this);
+		Content = new PetalExceptionContentManager(this);
 		ApplyConfiguration(config);
 
 		GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
@@ -37,7 +32,7 @@ public abstract class PetalCore : Game
 	protected override void Initialize()
 	{
 		_spriteBatch = new SpriteBatch(GraphicsDevice);
-		_texture = Contents.Load<Texture2D>("guy");
+		_texture = Content.Load<Texture2D>("guy");
 		base.Initialize();
 	}
 
@@ -47,33 +42,13 @@ public abstract class PetalCore : Game
 		Window.Title = config.WindowTitle;
 		IsMouseVisible = config.IsMouseVisible;
 
-		var windowSize = new Vector2Int(config.WindowWidth, config.WindowHeight);
-
-		switch (_windowType)
-		{
-			case WindowType.Windowed:
-				break;
-			case WindowType.BorderlessFullscreen:
-			{
-				var displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
-				windowSize = new Vector2Int(displayMode.Width, displayMode.Height);
-				break;
-			}
-			case WindowType.Fullscreen:
-			{
-				var displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
-				windowSize = new Vector2Int(displayMode.Width, displayMode.Height);
-				break;
-			}
-			default:
-				throw new InvalidOperationException($"Config window type {config.WindowType} is not supported.");
-		}
+		var preferredWindowSize = new Vector2Int(config.WindowWidth, config.WindowHeight);
 
 		Window.AllowUserResizing = config.IsWindowUserResizable;
 		IsFixedTimeStep = config.VSync;
 		TargetElapsedTime = TimeSpan.FromSeconds(1d / config.DesiredFramerate);
 		
-		ChangeWindowProperties(windowSize, _windowType);
+		ChangeWindowProperties(preferredWindowSize, _windowType);
 	}
 
 	protected override void Update(GameTime gameTime)
@@ -118,10 +93,21 @@ public abstract class PetalCore : Game
 		return Graphics.GraphicsDevice.Viewport.Bounds;
 	}
 
+	public Vector2Int GetWindowSize()
+	{
+		return new Vector2Int(GetWindowBounds());
+	}
+
 	public Vector2Int GetScreenSize()
 	{
 		var displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
 		return new Vector2Int(displayMode.Width, displayMode.Height);
+	}
+
+	public Rectangle GetScreenBounds()
+	{
+		var screenSize = GetScreenSize();
+		return new Rectangle(0, 0, screenSize.X, screenSize.Y);
 	}
 
 	public Vector2 GetWindowDimensions()
@@ -136,8 +122,9 @@ public abstract class PetalCore : Game
 	public void ChangeWindowProperties(Vector2Int size, WindowType? windowType)
 	{
 		_windowType = windowType ?? _windowType;
+		size = GetPreferredWindowSize(size, _windowType);
 
-		switch (windowType)
+		switch (_windowType)
 		{
 			case WindowType.Windowed:
 				Graphics.PreferredBackBufferWidth = size.X;
@@ -156,10 +143,30 @@ public abstract class PetalCore : Game
 				Graphics.ToggleFullScreen();
 				break;
 			default:
-				throw new InvalidOperationException($"Config window type {windowType} is not supported.");
+				throw new InvalidOperationException($"Window type {windowType} is not supported.");
 		}
 		
 		Graphics.ApplyChanges();
+	}
+
+	public Vector2Int GetPreferredWindowSize(Vector2Int size, WindowType windowType)
+	{
+		var windowSize = size;
+		var displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
+		
+		switch (_windowType)
+		{
+			case WindowType.Windowed:
+				break;
+			case WindowType.BorderlessFullscreen:
+				windowSize = new Vector2Int(displayMode.Width, displayMode.Height);
+				break;
+			case WindowType.Fullscreen:
+				windowSize = new Vector2Int(displayMode.Width, displayMode.Height);
+				break;
+			}
+
+		return windowSize;
 	}
 
 	protected virtual PetalConfiguration RecreateConfiguration() => new();
