@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Petal.Engine.Extensions;
 using Petal.Engine.Math;
+using Petal.IO;
 
 namespace Petal.Engine;
 
@@ -41,7 +42,7 @@ public sealed class PetalApplication
 		_game = new PetalGame(this);
 		_graphics = new GraphicsDeviceManager(_game);
 		_applicationHandler = applicationHandler;
-		
+
 		ApplyConfiguration(config);
 	}
 
@@ -96,7 +97,7 @@ public sealed class PetalApplication
 		_instance = null;
 	}
 	
-	public void ChangeWindowProperties(Vector2Int size, WindowType? windowType)
+	public void ChangeWindowProperties(Vector2Int size, WindowType? windowType = null)
 	{
 		_windowType = windowType ?? _windowType;
 		size = GetPreferredWindowSize(size, _windowType);

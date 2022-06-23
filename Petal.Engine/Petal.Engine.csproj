@@ -25,6 +25,7 @@
 
     <ItemGroup>
       <Folder Include="Persistence" />
+      <Folder Include="Utilities" />
     </ItemGroup>
 
 </Project>
