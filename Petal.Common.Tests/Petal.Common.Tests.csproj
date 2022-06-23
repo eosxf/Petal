@@ -5,6 +5,7 @@
         <Nullable>enable</Nullable>
         <WarningsAsErrors>nullable</WarningsAsErrors>
         <IsPackable>false</IsPackable>
+        <RootNamespace>Petal.IO.Tests</RootNamespace>
     </PropertyGroup>
 
     <ItemGroup>
@@ -15,7 +16,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Petal.IO\Petal.IO.csproj" />
+      <ProjectReference Include="..\Petal.Common\Petal.Common.csproj" />
     </ItemGroup>
 
 </Project>

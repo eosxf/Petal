@@ -14,10 +14,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Petal.IO\Petal.IO.csproj" />
-    </ItemGroup>
-
-    <ItemGroup>
       <Reference Include="FNA, Version=22.5.0.0, Culture=neutral, PublicKeyToken=null">
         <HintPath>lib\FNA.dll</HintPath>
       </Reference>
@@ -26,6 +22,10 @@
     <ItemGroup>
       <Folder Include="Persistence" />
       <Folder Include="Utilities" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Petal.Common\Petal.Common.csproj" />
     </ItemGroup>
 
 </Project>
