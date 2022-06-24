@@ -150,20 +150,16 @@ public sealed class PetalApplication
 			case WindowType.Fullscreen:
 				windowSize = new Vector2Int(displayMode.Width, displayMode.Height);
 				break;
+			default:
+				throw new InvalidOperationException($"Window type {windowType} is not supported.");
 		}
 
 		return windowSize;
 	}
 	
-	public Rectangle GetWindowBounds()
-	{
-		return Graphics.GraphicsDevice.Viewport.Bounds;
-	}
+	public Rectangle GetWindowBounds() => Graphics.GraphicsDevice.Viewport.Bounds;
 
-	public Vector2Int GetWindowSize()
-	{
-		return new Vector2Int(GetWindowBounds());
-	}
+	public Vector2Int GetWindowSize() => new(GetWindowBounds());
 
 	public Vector2Int GetScreenSize()
 	{

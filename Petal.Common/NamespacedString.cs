@@ -3,6 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace Petal;
 
+[Serializable]
 public struct NamespacedString
 {
 	public static string DefaultNamespace => "any";
