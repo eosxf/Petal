@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.CompilerServices;
 using System.Text.Json.Serialization;
 
 namespace Petal;
@@ -74,13 +75,8 @@ public struct NamespacedString
 		return FullName;
 	}
 
-	public static implicit operator NamespacedString(string val)
-	{
-		return new NamespacedString(val);
-	}
-
-	public static implicit operator string(NamespacedString val)
-	{
-		return val.FullName;
-	}
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static implicit operator NamespacedString(string val) => new (val);
+	[MethodImpl(MethodImplOptions.AggressiveInlining)]
+	public static implicit operator string(NamespacedString val) => val.FullName;
 }

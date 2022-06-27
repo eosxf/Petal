@@ -44,4 +44,7 @@ public struct Vector2Int : IEquatable<Vector2Int>
 	}
 
 	public override int GetHashCode() => X.GetHashCode() + Y.GetHashCode();
+
+	public static explicit operator Vector2Int(Vector2 vec) => new((int)vec.X, (int)vec.Y);
+	public static explicit operator Vector2(Vector2Int vec) => new(vec.X, vec.Y);
 }
