@@ -3,8 +3,10 @@ using Microsoft.Xna.Framework;
 
 namespace Petal.Engine.UI;
 
-public class Scene
+public class Scene : IScene
 {
+	public Color BackgroundColor { get; set; } = Color.CornflowerBlue;
+	
 	private bool _initialized = false;
 	private readonly Dictionary<string, SceneLayer> _layers = new();
 
@@ -13,18 +15,40 @@ public class Scene
 		
 	}
 
-	internal void Initialize()
+	public void Enter()
 	{
 		if (_initialized) return;
+		OnEnter();
 		_initialized = true;
 	}
 
+	protected virtual void OnEnter()
+	{
+		
+	}
+
 	public void Update(GameTime gameTime)
+	{
+		OnUpdate(gameTime);
+	}
+
+	protected virtual void OnUpdate(GameTime gameTime)
 	{
 		
 	}
 
 	public void Draw(GameTime gameTime)
+	{
+		PetalApplication.Instance.Graphics.GraphicsDevice.Clear(BackgroundColor);
+		OnDraw(gameTime);
+	}
+	
+	protected virtual void OnDraw(GameTime gameTime)
+	{
+		
+	}
+
+	public void Leave()
 	{
 		
 	}

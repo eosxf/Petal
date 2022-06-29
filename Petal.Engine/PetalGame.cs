@@ -5,7 +5,7 @@ namespace Petal.Engine;
 
 internal sealed class PetalGame : Game
 {
-	private PetalApplication _app;
+	private readonly PetalApplication _app;
 
 	public PetalGame(PetalApplication app)
 	{
@@ -40,20 +40,18 @@ internal sealed class PetalGame : Game
 	protected override void Initialize()
 	{
 		base.Initialize();
+		Content.Dispose(); // Content cannot be set to null :(
 		_app.Initialize();
 	}
 
 	protected override void Draw(GameTime gameTime)
 	{
 		_app.Draw(gameTime);
-		base.Draw(gameTime);
 	}
 
 	protected override void Update(GameTime gameTime)
 	{
-	
 		_app.Update(gameTime);
-		//base.Update(gameTime); // probably for components which shouldn't impact Petal
 	}
 
 	protected override void OnExiting(object sender, EventArgs args)

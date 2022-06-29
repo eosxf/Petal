@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Petal.Engine.Extensions;
 using Petal.Engine.Math;
+using Petal.Engine.UI;
 using Petal.IO;
 
 namespace Petal.Engine;
@@ -32,6 +33,14 @@ public sealed class PetalApplication
 	public GraphicsDeviceManager Graphics => _graphics;
 	public WindowType WindowType => _windowType;
 
+	//private GameTime _gameTime = new();
+
+	private SceneManager _sceneManager;
+
+	public SceneManager SceneManager => _sceneManager;
+
+	public GameServiceContainer Services => _game.Services;
+
 	public PetalApplication(PetalConfiguration config, IApplicationHandler applicationHandler)
 	{
 		if (_instance != null)
@@ -42,6 +51,7 @@ public sealed class PetalApplication
 		_game = new PetalGame(this);
 		_graphics = new GraphicsDeviceManager(_game);
 		_applicationHandler = applicationHandler;
+		_sceneManager = new SceneManager();
 
 		ApplyConfiguration(config);
 	}
@@ -77,16 +87,18 @@ public sealed class PetalApplication
 		if (_initialized) return;
 		_initialized = true;
 		
-		_applicationHandler.OnInitialize(this);
+		_applicationHandler.OnInitialize();
 	}
 
 	public void Update(GameTime gameTime)
 	{
+		_sceneManager.Update(gameTime);
 		_applicationHandler.OnUpdate(gameTime);
 	}
 
 	public void Draw(GameTime gameTime)
 	{
+		_sceneManager.Draw(gameTime);
 		_applicationHandler.OnDraw(gameTime);
 	}
 	
@@ -161,21 +173,13 @@ public sealed class PetalApplication
 
 	public Vector2Int GetWindowSize() => new(GetWindowBounds());
 
+	public Rectangle GetScreenBounds() => (Rectangle) GetScreenSize();
+
+	public Vector2Int GetWindowDimensions() => (Vector2Int) GetWindowBounds();
+	
 	public Vector2Int GetScreenSize()
 	{
 		var displayMode = GraphicsAdapter.DefaultAdapter.CurrentDisplayMode;
 		return new Vector2Int(displayMode.Width, displayMode.Height);
-	}
-
-	public Rectangle GetScreenBounds()
-	{
-		var screenSize = GetScreenSize();
-		return new Rectangle(0, 0, screenSize.X, screenSize.Y);
-	}
-
-	public Vector2 GetWindowDimensions()
-	{
-		var bounds = GetWindowBounds();
-		return new Vector2(bounds.Width, bounds.Height);
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace Petal.Engine.Sandbox;
@@ -7,12 +8,11 @@ namespace Petal.Engine.Sandbox;
 public sealed class SandboxApplicationHandler : IApplicationHandler
 {
 	private PetalApplication _app = null!;
-	private SpriteBatch _spriteBatch = null!;
 
-	public void OnInitialize(PetalApplication app)
+	public void OnInitialize()
 	{
-		_app = app;
-		_spriteBatch = new SpriteBatch(_app.Graphics.GraphicsDevice);
+		_app = PetalApplication.Instance;
+		_app.SceneManager.ChangeScene(new SandboxScene());
 	}
 
 	public void OnUpdate(GameTime gameTime)
