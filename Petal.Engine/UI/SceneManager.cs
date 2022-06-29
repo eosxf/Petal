@@ -12,6 +12,9 @@ public sealed class SceneManager
 		
 	}
 
+	public bool IsRunningScene() => _currentScene != null && _currentTransition == null;
+	public bool IsRunningTransition() => _currentTransition != null;
+
 	public void ChangeScene(Scene newScene)
 	{
 		_currentScene = newScene;

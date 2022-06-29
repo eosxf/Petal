@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Petal.Engine.Extensions;
 using Petal.Engine.Math;
 using Petal.Engine.UI;
+using Petal.Engine.Utilities.Coroutines;
 using Petal.IO;
 
 namespace Petal.Engine;
@@ -40,6 +41,10 @@ public sealed class PetalApplication
 	public SceneManager SceneManager => _sceneManager;
 
 	public GameServiceContainer Services => _game.Services;
+
+	private CoroutineManager _coroutineManager = new();
+
+	public CoroutineManager CoroutineManager => _coroutineManager;
 
 	public PetalApplication(PetalConfiguration config, IApplicationHandler applicationHandler)
 	{
@@ -92,6 +97,11 @@ public sealed class PetalApplication
 
 	public void Update(GameTime gameTime)
 	{
+		if (_sceneManager.IsRunningScene())
+		{
+			_coroutineManager.Update(gameTime);
+		}
+		
 		_sceneManager.Update(gameTime);
 		_applicationHandler.OnUpdate(gameTime);
 	}
