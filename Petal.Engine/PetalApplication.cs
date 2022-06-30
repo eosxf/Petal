@@ -5,7 +5,6 @@ using Petal.Engine.Extensions;
 using Petal.Engine.Math;
 using Petal.Engine.UI;
 using Petal.Engine.Utilities.Coroutines;
-using Petal.IO;
 
 namespace Petal.Engine;
 
@@ -21,13 +20,12 @@ public sealed class PetalApplication
 				throw new InvalidOperationException("No Petal application has been created yet.");
 			return _instance;
 		}
-
-		private set => _instance = value;
 	}
 	
 	private readonly PetalGame _game;
 	private readonly GraphicsDeviceManager _graphics;
 	private readonly IApplicationHandler _applicationHandler;
+	
 	private bool _initialized = false;
 	private WindowType _windowType = WindowType.Windowed;
 
@@ -87,11 +85,12 @@ public sealed class PetalApplication
 		_game.Exit();
 	}
 
-	public void Initialize()
+	internal void Initialize()
 	{
-		if (_initialized) return;
-		_initialized = true;
+		if (_initialized)
+			throw new InvalidOperationException("Petal application is already initialized, this is likely a bug.");
 		
+		_initialized = true;
 		_applicationHandler.OnInitialize();
 	}
 
@@ -123,24 +122,20 @@ public sealed class PetalApplication
 	{
 		_windowType = windowType ?? _windowType;
 		size = GetPreferredWindowSize(size, _windowType);
+		Graphics.PreferredBackBufferWidth = size.X;
+		Graphics.PreferredBackBufferHeight = size.Y;
 
 		switch (_windowType)
 		{
 			case WindowType.Windowed:
-				Graphics.PreferredBackBufferWidth = size.X;
-				Graphics.PreferredBackBufferHeight = size.Y;
 				_game.Window.SetBorderless(false);
 				Graphics.IsFullScreen = false;
 				break;
 			case WindowType.Borderless:
-				Graphics.PreferredBackBufferWidth = size.X;
-				Graphics.PreferredBackBufferHeight = size.Y;
 				Graphics.IsFullScreen = false;
 				_game.Window.SetBorderless(true);
 				break;
 			case WindowType.BorderlessFullscreen:
-				Graphics.PreferredBackBufferWidth = size.X;
-				Graphics.PreferredBackBufferHeight = size.Y;
 				Graphics.IsFullScreen = false; // this isn't destined to cause confusion
 				_game.Window.SetBorderless(true);
 				break;

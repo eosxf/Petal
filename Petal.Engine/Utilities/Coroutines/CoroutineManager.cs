@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
@@ -41,10 +40,8 @@ public sealed class CoroutineManager
 	{
 		_isInUpdate = true;
 
-		for (int i = 0; i < _unblockedCoroutines.Count; ++i)
+		foreach (var coroutine in _unblockedCoroutines)
 		{
-			var coroutine = _unblockedCoroutines[i];
-
 			if (coroutine.IsDone)
 				continue;
 
@@ -106,8 +103,7 @@ public sealed class CoroutineManager
 			coroutine.WaitForCoroutine = coroutine.Enumerator?.Current as Coroutine;
 			return true;
 		}
-
-		else
-			return true;
+		
+		return true;
 	}
 }

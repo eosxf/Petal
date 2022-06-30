@@ -2,7 +2,7 @@
 
 namespace Petal.Engine.UI;
 
-public class SceneTransition : IScene
+public sealed class SceneTransition : IScene
 {
 	public void Enter()
 	{
