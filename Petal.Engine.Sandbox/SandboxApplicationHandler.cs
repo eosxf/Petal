@@ -16,17 +16,10 @@ public sealed class SandboxApplicationHandler : IApplicationHandler
 		_app.SceneManager.ChangeScene(new SandboxScene());
 
 		_app.CoroutineManager.StartCoroutine(TestCoroutine());
-
-		_app.CoroutineManager.StartCoroutine(ChangeWindow(WindowType.Windowed, 2.5f, new 
-			Vector2Int(960, 540)));
-		
-		_app.CoroutineManager.StartCoroutine(ChangeWindow(WindowType.Borderless, 5.0f, new 
-			Vector2Int(1280, 700)));
-		
+		_app.CoroutineManager.StartCoroutine(ChangeWindow(WindowType.Windowed, 2.5f, new Vector2Int(960, 540)));
+		_app.CoroutineManager.StartCoroutine(ChangeWindow(WindowType.Borderless, 5.0f, new Vector2Int(1280, 700)));
 		_app.CoroutineManager.StartCoroutine(ChangeWindow(WindowType.BorderlessFullscreen, 7.5f));
-		
 		_app.CoroutineManager.StartCoroutine(ChangeWindow(WindowType.Fullscreen, 10.0f));
-
 		_app.CoroutineManager.StartCoroutine(StopGame(12.5f));
 	}
 

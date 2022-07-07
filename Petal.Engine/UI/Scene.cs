@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework;
 
 namespace Petal.Engine.UI;
 
-public class Scene : IScene
+public class Scene
 {
 	public Color BackgroundColor { get; set; } = Color.CornflowerBlue;
 	
